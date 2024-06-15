@@ -1,4 +1,7 @@
-FROM amazoncorretto:17-alpine-jdk
-MAINTAINER RAMIRO
-COPY target/GIFT_SERVICE-0.0.1-SNAPSHOT.jar GiftServiceBackendExpo.jar
-ENTRYPOINT ["java", "-jar", "/GiftServiceBackendExpo.jar"]
+FROM maven:3.6.3-jdk-11 AS build
+COPY . .
+RUN mvn clean package -DskipTests
+
+FROM openjdk:11-jre-slim
+COPY --from=build /target/*.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
